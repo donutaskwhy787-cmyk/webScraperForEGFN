@@ -13,19 +13,21 @@ options.add_argument('--headless=new')
 driver = webdriver.Chrome(options=options)
 driver.get("https://www.cbioportal.org/study/clinicalData?id=lgggbm_tcga_pub")
 
-time.sleep(.4)
+WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, "table.simple-table")))
 
-driver.quit()
 page_source = driver.page_source
+
+
+
 soup = BeautifulSoup(page_source, "lxml")
 
-table = soup.find("table", class_ = "simple-table table table-striped table-border-top")
-headers = table.find_all("th")
+tabler = soup.find("table", class_ = "simple-table table table-striped table-border-top")
+headers = tabler.find_all("th")
 titles = []
 
 for i in headers:
     title = i.text
     titles.append(title)
 
-df = pd.DataFrame(columns=titles)
-print(df)
+print(titles)
+driver.quit()
