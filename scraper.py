@@ -45,7 +45,7 @@ while id:
     options.add_argument('--headless=new')
     titles = []
     driver = webdriver.Chrome(options=options)
-    driver.get("https://www.cbioportal.org/patient?sampleId=" + id +"&studyId=lgggbm_tcga_pub")
+    driver.get("https://www.cbioportal.org/patient?sampleId=t" + id +"&studyId=lgggbm_tcga_pub")
     
 
     WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, "table.simple-table")))

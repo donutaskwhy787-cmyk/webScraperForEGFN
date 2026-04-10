@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 titles = ["type", "id"]
 folder = os.path.dirname(os.path.abspath(__file__))
@@ -21,37 +22,37 @@ df = pd.DataFrame(columns=titles)
 driver = webdriver.Chrome()
 wait = WebDriverWait(driver, 10)
 while id:
+    print(id)
     driver.get("https://www.cbioportal.org/patient?sampleId=" + id +"&studyId=lgggbm_tcga_pub")
+    try:
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "table.simple-table")))
 
-    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "table.simple-table")))
+        show_more = driver.find_elements(By.ID, "showMoreButton")
+        for b in show_more:
+            while b.is_enabled():
+                b.click()
+            
+        soup = BeautifulSoup(driver.page_source, "lxml")
+        tables = soup.find_all("table", class_ = "simple-table table table-striped table-border-top")
 
-    show_more = driver.find_elements(By.ID, "showMoreButton")
-    for b in show_more:
-        while b.is_enabled():
-            b.click()
-        
-    soup = BeautifulSoup(driver.page_source, "lxml")
-    tables = soup.find_all("table", class_ = "simple-table table table-striped table-border-top")
-
-    egfr = False
-    for table in tables:
-        rows = table.find_all("tr")
-        for row in rows:
-            data = row.find_all("td")
-            vals = [tr.text for tr in data]
-           
-            for v in vals:
-                if(v == "EGFR"):
-                    egfr = True
-    if(egfr):
-        tmp = ["amp", id]
-        print("huh")
-        df.loc[len(df)] = tmp
-    else:
-        tmp = ["normal", id]
-        print("huh")
-        df.loc[len(df)] = tmp
-    
+        egfr = False
+        for table in tables:
+            rows = table.find_all("tr")
+            for row in rows:
+                data = row.find_all("td")
+                vals = [tr.text for tr in data]
+            
+                for v in vals:
+                    if(v == "EGFR"):
+                        egfr = True
+        if(egfr):
+            tmp = ["amp", id]
+            df.loc[len(df)] = tmp
+        else:
+            tmp = ["normal", id]
+            df.loc[len(df)] = tmp
+    except TimeoutException:
+        print("e")
     id = names.readline()
 driver.quit()
 print(df)
