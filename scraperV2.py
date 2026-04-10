@@ -17,15 +17,19 @@ id = names.readline()
 df = pd.DataFrame(columns=titles)
 
 
-options = webdriver.ChromeOptions()
-options.add_argument('--headless=new')
-driver = webdriver.Chrome(options=options)
+
+driver = webdriver.Chrome()
+wait = WebDriverWait(driver, 10)
 while id:
-    
     driver.get("https://www.cbioportal.org/patient?sampleId=" + id +"&studyId=lgggbm_tcga_pub")
 
-    WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, "table.simple-table")))
+    wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "table.simple-table")))
 
+    show_more = driver.find_elements(By.ID, "showMoreButton")
+    for b in show_more:
+        while b.is_enabled():
+            b.click()
+        
     soup = BeautifulSoup(driver.page_source, "lxml")
     tables = soup.find_all("table", class_ = "simple-table table table-striped table-border-top")
 
