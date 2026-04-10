@@ -41,7 +41,7 @@ while id:
             vals = [tr.text for tr in data]
            
             for v in vals:
-                if(v == "BGN"):
+                if(v == "EGFR"):
                     egfr = True
     if(egfr):
         tmp = ["amp", id]
@@ -55,3 +55,4 @@ while id:
     id = names.readline()
 driver.quit()
 print(df)
+df.to_excel("output.xlsx", index=False)
