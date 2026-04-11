@@ -52,7 +52,8 @@ while id:
             tmp = ["normal", id]
             df.loc[len(df)] = tmp
     except TimeoutException:
-        print("e")
+        tmp = ["manual", id]
+        df.loc[len(df)] = tmp
     id = names.readline()
 driver.quit()
 print(df)
